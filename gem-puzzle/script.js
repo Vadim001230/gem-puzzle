@@ -22,9 +22,11 @@ class Render {
     const counter = document.createElement('div');
     counter.className = ('header__counter');
     const counterTime = document.createElement('span');
-    counterTime.innerHTML = `Time: 00:00`
+    counterTime.className = ('header__counter-time');
+    counterTime.innerHTML = 'Time: 00:00';
     const counterMoves = document.createElement('span');
-    counterMoves.innerHTML = `Moves: 0`
+    counterMoves.className = ('header__counter-moves');
+    counterMoves.innerHTML = 'Moves: 0'
     const headerBtns = document.createElement('div');
     headerBtns.className = ('header__btns');
     const sound = document.createElement('button');
@@ -58,7 +60,7 @@ class Render {
 
     const tiles = [];
     tiles.push(empty);
-
+    let count = 0;
     function move(index) {
       let cell = tiles[index];
       //coordinates of adjacent tile
@@ -81,8 +83,11 @@ class Render {
       cell.left = emptyLeft;
       cell.top = emptyTop;
 
+      //counter
+      count++;
+      counterMoves.innerHTML = `Moves: ${count}`
+
       const isWon = tiles.every(cell => {
-        console.log(cell.value, cell.top, cell.left)
         if (cell.value === cell.top * 4 + cell.left) {
           return true;
         } else if (cell.value === cell.top * 4 + cell.left + 1) {
@@ -97,6 +102,33 @@ class Render {
 
     const arrShuffle = [...Array(15).keys()].sort( () => Math.random() - 0.5);
 
+    //timer
+    function timer() {
+      let minutes = 0;
+      let seconds = 0;
+      setInterval(() => {
+        seconds++
+        if (seconds === 60) {
+          seconds = 0;
+          minutes ++;
+        }
+        if (seconds < 10) seconds = '0' + seconds;
+        if (minutes < 10) {
+          counterTime.innerHTML = `Time: 0${minutes}:${seconds}`;
+        } else {
+          counterTime.innerHTML = `Time: ${minutes}:${seconds}`;
+        }
+			}, 1000);
+    };
+    let timerFlag = false;
+    field.addEventListener('click', () => {
+      if(!timerFlag) {
+        timer();
+        timerFlag = true;
+      }
+    });
+
+    //render tiles
     for (let i = 1; i <= 15; i++) {
       const tile = document.createElement('div');
       tile.className = ('tile');
@@ -117,11 +149,11 @@ class Render {
       tile.style.top = `${top * tileSize}px`;
       fieldContainer.append(tile);
       tile.append(tileSpan);
-
       tile.addEventListener('click', () => {
         move(i);
       });
     }
+
   }
   // const keyboard = document.createElement('div');
   // keyboard.classList.add('content__keyboard');
