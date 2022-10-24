@@ -33,11 +33,13 @@ body {
 button {
 	border: none;
   font-family: 'Lato', sans-serif;
-	font-weight: 400;
-  font-size: 18px;
+  font-weight: 300;
+  font-size: 20px;
+  border-radius: 10px;
 	color: #FFF;
 	cursor: pointer;
   background: transparent;
+  border: none;
 }
 
 .fon1 {background:#DB807D;}
@@ -74,7 +76,7 @@ button {
   flex-direction: column;
   justify-content: space-between;
   text-align: left;
-  padding: 8px;
+  padding: 6px;
 }
 
 .header__btns {
@@ -101,14 +103,18 @@ button {
   border: 2px solid #E2B272;
   width: 60px;
   height: 40px;
+  transition: 0.3s;
 }
 
 .header__sound:hover,
 .header__score:hover {
-  transition: 0.3s;
-  box-shadow: 0px 0px 5px 17px rgba(255, 255, 255, 0.2) inset;
+  box-shadow: 0px 0px 5px 20px rgba(255, 255, 255, 0.2) inset;
 }
 
+.header__sound:active,
+.header__score:active {
+  box-shadow: 0px 0px 5px 20px rgba(255, 255, 255, 0.3) inset;
+}
 
 .header__counter span{
   font-weight: 300;
@@ -120,7 +126,7 @@ button {
   width: 420px;
   height: 420px;
   background: url(assets/img/field-bg.jpg);
-  margin: 35px auto;
+  margin: 35px auto 20px;
   border-radius: 10px;
   text-align: center;
   display: flex;
@@ -171,6 +177,49 @@ button {
 .tile:active {
   transition: 0.2s;
   box-shadow: 0px 0px 20px 35px rgba(255, 255, 255, 0.6) inset;
+}
+
+/* size field btns */
+
+.size-container {
+  text-align: center;
+  display: flex;
+  justify-content: center;
+}
+
+.size-container button {
+  width: 50px;
+  height: 50px;
+  background: url(assets/img/field-bg.jpg);
+  margin: 0 25px;
+  transition: 0.3s;
+}
+
+.new-game {
+  display: block;
+  width: 200px;
+  height: 50px;
+  background: url(assets/img/field-bg.jpg);
+  margin: 20px auto 5px;
+  transition: 0.2s;
+}
+
+.size-container button:hover,
+.new-game:hover {
+  box-shadow: 0px 0px 5px 25px rgba(255, 255, 255, 0.2) inset;
+}
+
+.size-container button:active,
+.new-game:active {
+  box-shadow: 0px 0px 5px 25px rgba(255, 255, 255, 0.3) inset;
+}
+
+
+@media (max-height: 700px){
+  .field {
+    transform: scale(0.9);
+    margin: 5px auto;
+  }
 }
 
 @media (max-width: 768px) {

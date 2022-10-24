@@ -39,8 +39,15 @@ class Render {
     container.append(counter, headerBtns);
     counter.append(counterTime, counterMoves)
     headerBtns.append(sound, score)
+
+    //volume off
     sound.addEventListener('click', () => {
       sound.classList.toggle('off');
+      if (sound.classList.contains('off')) {
+        audioMove.volume = 0;
+      } else {
+        audioMove.volume = 0.9;
+      }
     });
 
   //field
@@ -50,6 +57,27 @@ class Render {
     const fieldContainer = document.createElement('div');
     fieldContainer.className = ('field__container');
     field.prepend(fieldContainer);
+  //size field btns
+    const sizeContainer = document.createElement('div');
+    sizeContainer.className = ('size-container');
+    field.after(sizeContainer);
+    const sizeBtn3 = document.createElement('button');
+    sizeBtn3.className = ('size-btn3');
+    sizeBtn3.textContent = '3x3';
+    sizeContainer.append(sizeBtn3);
+    const sizeBtn4 = document.createElement('button');
+    sizeBtn4.className = ('size-btn4');
+    sizeBtn4.textContent = '4x4';
+    sizeContainer.append(sizeBtn4);
+    const sizeBtn5 = document.createElement('button');
+    sizeBtn5.className = ('size-btn4');
+    sizeBtn5.textContent = '5x5';
+    sizeContainer.append(sizeBtn5);
+  // new game
+    const newGame = document.createElement('button');
+    newGame.className = ('new-game');
+    newGame.textContent = 'New Game';
+    sizeContainer.after(newGame)
 
     const tileSize = 100;
     const empty  = {
@@ -103,10 +131,13 @@ class Render {
     const arrShuffle = [...Array(15).keys()].sort( () => Math.random() - 0.5);
 
     //timer
+    let minutes = 0;
+    let seconds = 0;
+    let timerFlag = false;
+    let intervalID;
+
     function timer() {
-      let minutes = 0;
-      let seconds = 0;
-      setInterval(() => {
+      intervalID = setInterval(() => {
         seconds++
         if (seconds === 60) {
           seconds = 0;
@@ -120,7 +151,7 @@ class Render {
         }
 			}, 1000);
     };
-    let timerFlag = false;
+
     field.addEventListener('click', () => {
       if(!timerFlag) {
         timer();
@@ -129,40 +160,47 @@ class Render {
     });
 
     //render tiles
-    for (let i = 1; i <= 15; i++) {
-      const tile = document.createElement('div');
-      tile.className = ('tile');
-      const tileSpan = document.createElement('span');
-      const value = arrShuffle[i - 1] + 1;
-      tileSpan.innerHTML = value;
+    function renderTiles() {
+      for (let i = 1; i <= 15; i++) {
+        const tile = document.createElement('div');
+        tile.className = ('tile');
+        const tileSpan = document.createElement('span');
+        const value = arrShuffle[i - 1] + 1;
+        tileSpan.innerHTML = value;
 
-      const left = i % 4;
-      const top = (i - left) / 4;
-      tiles.push({
-        left: left,
-        top: top,
-        element: tile,
-        value: value
-      });
+        const left = i % 4;
+        const top = (i - left) / 4;
+        tiles.push({
+          left: left,
+          top: top,
+          element: tile,
+          value: value
+        });
 
-      tile.style.left = `${left * tileSize}px`;
-      tile.style.top = `${top * tileSize}px`;
-      fieldContainer.append(tile);
-      tile.append(tileSpan);
-      tile.addEventListener('click', () => {
-        move(i);
-      });
+        tile.style.left = `${left * tileSize}px`;
+        tile.style.top = `${top * tileSize}px`;
+        fieldContainer.append(tile);
+        tile.append(tileSpan);
+        tile.addEventListener('click', () => {
+          move(i);
+        });
+      }
     }
+    renderTiles()
+
+    newGame.addEventListener('click', () => {
+      clearInterval(intervalID);
+      count = 0;
+      minutes = 0;
+      seconds = 0;
+      timerFlag = false;
+      counterMoves.innerHTML = `Moves: 0`;
+      counterTime.innerHTML = `Time: 00:00`;
+    });
+
+
 
   }
-  // const keyboard = document.createElement('div');
-  // keyboard.classList.add('content__keyboard');
-  //   keyboard.append(this.createField(tiles));
-  // }
-
-  // createField() {
-
-  // }
 }
 
 const container = new Render();
