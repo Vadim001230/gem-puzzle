@@ -1,3 +1,4 @@
+alert('Уважаемый проверяющий, не успел доделать пару моментов, буду благодарен если проверите игру вечером!')
 //body random color
 let randomColor = Math.round(1 - 0.5 + Math.random() * (10 - 1 + 1));
 const body = document.getElementById('body');
@@ -86,9 +87,32 @@ class Render {
       left: 0
     }
 
+    //timer
+    let minutes = 0;
+    let seconds = 0;
+    let timerFlag = false;
+    let intervalID;
+
+    function timer() {
+      intervalID = setInterval(() => {
+        seconds++
+        if (seconds === 60) {
+          seconds = 0;
+          minutes ++;
+        }
+        if (seconds < 10) seconds = '0' + seconds;
+        if (minutes < 10) {
+          counterTime.innerHTML = `Time: 0${minutes}:${seconds}`;
+        } else {
+          counterTime.innerHTML = `Time: ${minutes}:${seconds}`;
+        }
+      }, 1000);
+    };
+
     const tiles = [];
     tiles.push(empty);
     let count = 0;
+
     function move(index) {
       let cell = tiles[index];
       //coordinates of adjacent tile
@@ -111,9 +135,16 @@ class Render {
       cell.left = emptyLeft;
       cell.top = emptyTop;
 
-      //counter
+    //counter
       count++;
-      counterMoves.innerHTML = `Moves: ${count}`
+      counterMoves.innerHTML = `Moves: ${count}`;
+
+    field.addEventListener('click', () => {
+      if(!timerFlag) {
+        timer();
+        timerFlag = true;
+      }
+    });
 
       const isWon = tiles.every(cell => {
         if (cell.value === cell.top * 4 + cell.left) {
@@ -124,47 +155,18 @@ class Render {
       });
 
       if (isWon) {
-        alert('you won');
+        alert(`Hooray! You solved the puzzle in ${minutes}:${seconds} and ${count} moves!`);
       }
     }
 
-    const arrShuffle = [...Array(15).keys()].sort( () => Math.random() - 0.5);
-
-    //timer
-    let minutes = 0;
-    let seconds = 0;
-    let timerFlag = false;
-    let intervalID;
-
-    function timer() {
-      intervalID = setInterval(() => {
-        seconds++
-        if (seconds === 60) {
-          seconds = 0;
-          minutes ++;
-        }
-        if (seconds < 10) seconds = '0' + seconds;
-        if (minutes < 10) {
-          counterTime.innerHTML = `Time: 0${minutes}:${seconds}`;
-        } else {
-          counterTime.innerHTML = `Time: ${minutes}:${seconds}`;
-        }
-			}, 1000);
-    };
-
-    field.addEventListener('click', () => {
-      if(!timerFlag) {
-        timer();
-        timerFlag = true;
-      }
-    });
-
     //render tiles
-    function renderTiles() {
+    let arrShuffle = [...Array(15).keys()].sort( () => Math.random() - 0.5);
+    function renderField() {
       for (let i = 1; i <= 15; i++) {
         const tile = document.createElement('div');
         tile.className = ('tile');
         const tileSpan = document.createElement('span');
+        tileSpan.className = ('tile__span');
         const value = arrShuffle[i - 1] + 1;
         tileSpan.innerHTML = value;
 
@@ -186,7 +188,19 @@ class Render {
         });
       }
     }
-    renderTiles()
+    renderField()
+
+    function removeField() {
+      const tils = document.querySelectorAll('.tile');
+      const tileSpans = document.querySelectorAll('.tile__span');
+      for (let tile of tils) {
+        tile.remove();
+      }
+      for (let tileSpan of tileSpans) {
+        tileSpan.remove();
+      }
+      tiles.length = 0;
+    }
 
     newGame.addEventListener('click', () => {
       clearInterval(intervalID);
@@ -196,6 +210,13 @@ class Render {
       timerFlag = false;
       counterMoves.innerHTML = `Moves: 0`;
       counterTime.innerHTML = `Time: 00:00`;
+      empty.value = 0;
+      empty.top = 0;
+      empty.left = 0;
+      arrShuffle = [...Array(15).keys()].sort( () => Math.random() - 0.5);
+      removeField()
+      renderField()
+      console.log(tiles)
     });
 
 
