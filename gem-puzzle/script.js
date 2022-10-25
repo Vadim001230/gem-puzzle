@@ -1,4 +1,4 @@
-alert('Уважаемый проверяющий, не успел доделать пару моментов, буду благодарен если проверите игру вечером!')
+//alert('Уважаемый проверяющий, не успел доделать пару моментов, буду благодарен если проверите игру вечером!')
 //body random color
 let randomColor = Math.round(1 - 0.5 + Math.random() * (10 - 1 + 1));
 const body = document.getElementById('body');
@@ -74,6 +74,33 @@ class Render {
     sizeBtn5.className = ('size-btn4');
     sizeBtn5.textContent = '5x5';
     sizeContainer.append(sizeBtn5);
+    const sizeBtn6 = document.createElement('button');
+    sizeBtn6.className = ('size-btn6');
+    sizeBtn6.textContent = '6x6';
+    sizeContainer.append(sizeBtn6);
+    const sizeBtn7 = document.createElement('button');
+    sizeBtn7.className = ('size-btn7');
+    sizeBtn7.textContent = '7x7';
+    sizeContainer.append(sizeBtn7);
+    const sizeBtn8 = document.createElement('button');
+    sizeBtn8.className = ('size-btn8');
+    sizeBtn8.textContent = '8x8';
+    sizeContainer.append(sizeBtn8);
+  // win message
+    const winField = document.createElement('div');
+    winField.className = ('win-field');
+    body.prepend(winField);
+    const winBlock = document.createElement('div');
+    winBlock.className = ('win-block');
+    winField.append(winBlock);
+    const winMessage = document.createElement('div');
+    winMessage.className = ('win-message');
+    winBlock.append(winMessage);
+    const winBtn = document.createElement('button');
+    winBtn.className = ('win-btn');
+    winBtn.textContent = 'Shuffle and start';
+    winBlock.append(winBtn);
+
   // new game
     const newGame = document.createElement('button');
     newGame.className = ('new-game');
@@ -146,6 +173,7 @@ class Render {
       }
     });
 
+    //algoritm for win
       const isWon = tiles.every(cell => {
         if (cell.value === cell.top * 4 + cell.left) {
           return true;
@@ -155,12 +183,20 @@ class Render {
       });
 
       if (isWon) {
-        alert(`Hooray! You solved the puzzle in ${minutes}:${seconds} and ${count} moves!`);
+        setTimeout(() => {
+          winField.style.opacity = '1';
+          winField.style.visibility = 'visible'
+          if (minutes < 10) {
+            winMessage.textContent = `Hooray! You solved the puzzle in 0${minutes}:${seconds} and ${count} moves!`;
+          } else {
+            winMessage.textContent = `Hooray! You solved the puzzle in ${minutes}:${seconds} and ${count} moves!`;
+          }
+        }, 400);
       }
     }
 
     //render tiles
-    let arrShuffle = [...Array(15).keys()].sort( () => Math.random() - 0.5);
+    let arrShuffle = [...Array(15).keys()]//.sort( () => Math.random() - 0.5);
     function renderField() {
       for (let i = 1; i <= 15; i++) {
         const tile = document.createElement('div');
@@ -202,8 +238,10 @@ class Render {
       tiles.length = 0;
     }
 
-    newGame.addEventListener('click', () => {
+    function NewGame() {
       clearInterval(intervalID);
+      winField.style.opacity = '';
+      winField.style.visibility = '';
       count = 0;
       minutes = 0;
       seconds = 0;
@@ -217,10 +255,10 @@ class Render {
       removeField()
       renderField()
       console.log(tiles)
-    });
+    }
 
-
-
+    newGame.addEventListener('click', NewGame);
+    winBtn.addEventListener('click', NewGame);
   }
 }
 
