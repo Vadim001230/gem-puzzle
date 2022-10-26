@@ -1,4 +1,4 @@
-//alert('Уважаемый проверяющий, не успел доделать пару моментов, буду благодарен если проверите игру вечером!')
+alert('Уважаемый проверяющий, не успел доделать пару моментов, буду благодарен если проверите игру вечером!')
 //body random color
 let randomColor = Math.round(1 - 0.5 + Math.random() * (10 - 1 + 1));
 const body = document.getElementById('body');
@@ -15,6 +15,39 @@ class Render {
   }
 
   createField() {
+  // win modal
+    const winModal = document.createElement('div');
+    winModal.className = ('win-modal');
+    body.prepend(winModal);
+    const winBlock = document.createElement('div');
+    winBlock.className = ('win-block');
+    winModal.append(winBlock);
+    const winMessage = document.createElement('div');
+    winMessage.className = ('win-message');
+    winBlock.append(winMessage);
+    const winBtn = document.createElement('button');
+    winBtn.className = ('win-btn');
+    winBtn.textContent = 'Shuffle and start';
+    winBlock.append(winBtn);
+
+  // score modal
+    const scoreModal = document.createElement('div');
+    scoreModal.className = ('score-modal');
+    body.prepend(scoreModal);
+    const scoreBlock = document.createElement('div');
+    scoreBlock.className = ('score-block');
+    scoreModal.append(scoreBlock);
+    const scoreTitle = document.createElement('h3');
+    scoreTitle.className = ('score-block__title');
+    scoreBlock.append(scoreTitle);
+    scoreTitle.textContent = 'Top results';
+    const scoreSubtitle = document.createElement('pre');
+    scoreSubtitle.className = ('score-block__subtitle');
+    scoreTitle.append(scoreSubtitle);
+    scoreSubtitle.textContent = '№     Time      Moves';
+    const scoreList = document.createElement('ol');
+    scoreList.className = ('score-block__list');
+    scoreSubtitle.after(scoreList);
   //header
     const header = document.createElement('header');
     header.className = ('header');
@@ -41,16 +74,6 @@ class Render {
     counter.append(counterTime, counterMoves)
     headerBtns.append(sound, score)
 
-    //volume off
-    sound.addEventListener('click', () => {
-      sound.classList.toggle('off');
-      if (sound.classList.contains('off')) {
-        audioMove.volume = 0;
-      } else {
-        audioMove.volume = 0.9;
-      }
-    });
-
   //field
     const field = document.createElement('div');
     field.className = ('field');
@@ -58,6 +81,7 @@ class Render {
     const fieldContainer = document.createElement('div');
     fieldContainer.className = ('field__container');
     field.prepend(fieldContainer);
+
   //size field btns
     const sizeContainer = document.createElement('div');
     sizeContainer.className = ('size-container');
@@ -86,20 +110,6 @@ class Render {
     sizeBtn8.className = ('size-btn8');
     sizeBtn8.textContent = '8x8';
     sizeContainer.append(sizeBtn8);
-  // win message
-    const winField = document.createElement('div');
-    winField.className = ('win-field');
-    body.prepend(winField);
-    const winBlock = document.createElement('div');
-    winBlock.className = ('win-block');
-    winField.append(winBlock);
-    const winMessage = document.createElement('div');
-    winMessage.className = ('win-message');
-    winBlock.append(winMessage);
-    const winBtn = document.createElement('button');
-    winBtn.className = ('win-btn');
-    winBtn.textContent = 'Shuffle and start';
-    winBlock.append(winBtn);
 
   // new game
     const newGame = document.createElement('button');
@@ -107,12 +117,15 @@ class Render {
     newGame.textContent = 'New Game';
     sizeContainer.after(newGame)
 
-    const tileSize = 100;
-    const empty  = {
-      value: 0,
-      top: 0,
-      left: 0
-    }
+    //volume off
+    sound.addEventListener('click', () => {
+      sound.classList.toggle('off');
+      if (sound.classList.contains('off')) {
+        audioMove.volume = 0;
+      } else {
+        audioMove.volume = 0.9;
+      }
+    });
 
     //timer
     let minutes = 0;
@@ -136,7 +149,15 @@ class Render {
       }, 1000);
     };
 
+    const tileSize = 100;
+    const empty  = {
+      value: 0,
+      top: 0,
+      left: 0
+    }
+
     const tiles = [];
+    const winner = [];
     tiles.push(empty);
     let count = 0;
 
@@ -184,19 +205,21 @@ class Render {
 
       if (isWon) {
         setTimeout(() => {
-          winField.style.opacity = '1';
-          winField.style.visibility = 'visible'
+          winModal.style.opacity = '1';
+          winModal.style.visibility = 'visible'
           if (minutes < 10) {
             winMessage.textContent = `Hooray! You solved the puzzle in 0${minutes}:${seconds} and ${count} moves!`;
+            winner.push(`  0${minutes}:${seconds}          ${count}`);
           } else {
             winMessage.textContent = `Hooray! You solved the puzzle in ${minutes}:${seconds} and ${count} moves!`;
+            winner.push(`  ${minutes}:${seconds}          ${count}`);
           }
-        }, 400);
+        }, 700);
       }
     }
 
     //render tiles
-    let arrShuffle = [...Array(15).keys()]//.sort( () => Math.random() - 0.5);
+    let arrShuffle = [...Array(15).keys()].sort( () => Math.random() - 0.5);
     function renderField() {
       for (let i = 1; i <= 15; i++) {
         const tile = document.createElement('div');
@@ -240,8 +263,8 @@ class Render {
 
     function NewGame() {
       clearInterval(intervalID);
-      winField.style.opacity = '';
-      winField.style.visibility = '';
+      winModal.style.opacity = '';
+      winModal.style.visibility = '';
       count = 0;
       minutes = 0;
       seconds = 0;
@@ -254,9 +277,23 @@ class Render {
       arrShuffle = [...Array(15).keys()].sort( () => Math.random() - 0.5);
       removeField()
       renderField()
-      console.log(tiles)
     }
 
+    function showScoreModal() {
+      scoreModal.style.opacity = '1';
+      scoreModal.style.visibility = 'visible';
+      scoreList.innerHTML = winner.map((win) => {
+        localStorage.setItem('win', JSON.stringify(winner));
+        winner.length = 10;
+        return `<li><pre>${win}<pre></li>`;
+        }).join('');
+    }
+
+    score.addEventListener('click', showScoreModal);
+    scoreModal.addEventListener('click', function() {
+      scoreModal.style.opacity = '0';
+      scoreModal.style.visibility = 'hidden';
+    });
     newGame.addEventListener('click', NewGame);
     winBtn.addEventListener('click', NewGame);
   }
