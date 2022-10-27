@@ -139,6 +139,7 @@ button {
   padding: 10px;
   text-align: center;
   font-size: 20px;
+  overflow: hidden;
 }
 
 .score-block__title {

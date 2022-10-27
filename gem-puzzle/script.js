@@ -1,4 +1,4 @@
-alert('Уважаемый проверяющий, не успел доделать пару моментов, буду благодарен если проверите игру вечером!')
+//alert('Уважаемый проверяющий, не успел доделать пару моментов, буду благодарен если проверите игру вечером!')
 //body random color
 let randomColor = Math.round(1 - 0.5 + Math.random() * (10 - 1 + 1));
 const body = document.getElementById('body');
@@ -152,18 +152,17 @@ class Render {
     const tileSize = 100;
     const empty  = {
       value: 0,
-      top: 0,
-      left: 0
+      top: 3,
+      left: 3
     }
-
     const tiles = [];
-    const winner = [];
     tiles.push(empty);
+    const winner = []; //score arr
     let count = 0;
 
     function move(index) {
       let cell = tiles[index];
-      //coordinates of adjacent tile
+    //coordinates of adjacent tile
       const leftDiff = Math.abs(empty.left - cell.left);
       const topDiff = Math.abs(empty.top - cell.top);
 
@@ -195,10 +194,20 @@ class Render {
     });
 
     //algoritm for win
-      const isWon = tiles.every(cell => {
-        if (cell.value === cell.top * 4 + cell.left) {
-          return true;
-        } else if (cell.value === cell.top * 4 + cell.left + 1) {
+    // function isWon() {
+    //   let newTiles = tiles.shift();
+    //   for (let i = 0; i <= 15; i++) {
+
+    //     if(newTiles[i].value === newTiles[i].top * 4 + newTiles[i].left + 1) {
+    //       return true
+    //     }
+    //     return false
+    //   }
+    // }
+    const newTiles = Array.from(tiles);
+    newTiles.splice(0, 1)
+      const isWon = newTiles.every(cell => {
+        if (cell.value === cell.top * 4 + cell.left + 1) {
           return true;
         }
       });
@@ -224,13 +233,33 @@ class Render {
       for (let i = 1; i <= 15; i++) {
         const tile = document.createElement('div');
         tile.className = ('tile');
+        tile.setAttribute('draggable' , 'true');
         const tileSpan = document.createElement('span');
         tileSpan.className = ('tile__span');
         const value = arrShuffle[i - 1] + 1;
         tileSpan.innerHTML = value;
 
-        const left = i % 4;
-        const top = (i - left) / 4;
+        let left;
+        let top;
+
+        if (i < 5) {
+          left = i - 1;
+          top = 0;
+        } else if (i > 4 && i < 9) {
+          left = i - 5;
+          top = 1;
+        } else if (i >= 9 && i < 13) {
+          left = i - 9;
+          top = 2;
+        } else {
+          left = i - 13;
+          top = 3;
+        }
+
+        if (tiles.length === 0) {
+          tiles.push(empty)
+        }
+
         tiles.push({
           left: left,
           top: top,
@@ -243,7 +272,7 @@ class Render {
         fieldContainer.append(tile);
         tile.append(tileSpan);
         tile.addEventListener('click', () => {
-          move(i);
+          move(i)
         });
       }
     }
@@ -259,9 +288,12 @@ class Render {
         tileSpan.remove();
       }
       tiles.length = 0;
+      timerFlag = false;
     }
 
     function NewGame() {
+
+      arrShuffle = [...Array(15).keys()].sort( () => Math.random() - 0.5);
       clearInterval(intervalID);
       winModal.style.opacity = '';
       winModal.style.visibility = '';
@@ -269,12 +301,11 @@ class Render {
       minutes = 0;
       seconds = 0;
       timerFlag = false;
+      empty.left = 3;
+      empty.top = 3;
       counterMoves.innerHTML = `Moves: 0`;
       counterTime.innerHTML = `Time: 00:00`;
-      empty.value = 0;
-      empty.top = 0;
-      empty.left = 0;
-      arrShuffle = [...Array(15).keys()].sort( () => Math.random() - 0.5);
+      console.log(tiles)
       removeField()
       renderField()
     }
