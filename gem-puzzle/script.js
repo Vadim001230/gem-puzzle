@@ -87,27 +87,28 @@ class Render {
     sizeContainer.className = ('size-container');
     field.after(sizeContainer);
     const sizeBtn3 = document.createElement('button');
-    sizeBtn3.className = ('size-btn3');
+    sizeBtn3.className = ('size-btn');
     sizeBtn3.textContent = '3x3';
     sizeContainer.append(sizeBtn3);
     const sizeBtn4 = document.createElement('button');
-    sizeBtn4.className = ('size-btn4');
+    sizeBtn4.className = ('size-btn');
+    sizeBtn4.classList.add('active');
     sizeBtn4.textContent = '4x4';
     sizeContainer.append(sizeBtn4);
     const sizeBtn5 = document.createElement('button');
-    sizeBtn5.className = ('size-btn4');
+    sizeBtn5.className = ('size-btn');
     sizeBtn5.textContent = '5x5';
     sizeContainer.append(sizeBtn5);
     const sizeBtn6 = document.createElement('button');
-    sizeBtn6.className = ('size-btn6');
+    sizeBtn6.className = ('size-btn');
     sizeBtn6.textContent = '6x6';
     sizeContainer.append(sizeBtn6);
     const sizeBtn7 = document.createElement('button');
-    sizeBtn7.className = ('size-btn7');
+    sizeBtn7.className = ('size-btn');
     sizeBtn7.textContent = '7x7';
     sizeContainer.append(sizeBtn7);
     const sizeBtn8 = document.createElement('button');
-    sizeBtn8.className = ('size-btn8');
+    sizeBtn8.className = ('size-btn');
     sizeBtn8.textContent = '8x8';
     sizeContainer.append(sizeBtn8);
 
@@ -194,16 +195,6 @@ class Render {
     });
 
     //algoritm for win
-    // function isWon() {
-    //   let newTiles = tiles.shift();
-    //   for (let i = 0; i <= 15; i++) {
-
-    //     if(newTiles[i].value === newTiles[i].top * 4 + newTiles[i].left + 1) {
-    //       return true
-    //     }
-    //     return false
-    //   }
-    // }
     const newTiles = Array.from(tiles);
     newTiles.splice(0, 1)
       const isWon = newTiles.every(cell => {
@@ -278,6 +269,16 @@ class Render {
     }
     renderField()
 
+    //size-btn
+    const sizeBtns = document.querySelectorAll('.size-btn');
+
+    sizeContainer.addEventListener('click', (event) => {
+      for (let btn of sizeBtns) {
+        btn.classList.remove('active');
+      }
+      event.target.classList.add('active');
+    });
+    //remove field
     function removeField() {
       const tils = document.querySelectorAll('.tile');
       const tileSpans = document.querySelectorAll('.tile__span');
@@ -292,7 +293,6 @@ class Render {
     }
 
     function NewGame() {
-
       arrShuffle = [...Array(15).keys()].sort( () => Math.random() - 0.5);
       clearInterval(intervalID);
       winModal.style.opacity = '';
@@ -317,7 +317,7 @@ class Render {
         localStorage.setItem('win', JSON.stringify(winner));
         winner.length = 10;
         return `<li><pre>${win}<pre></li>`;
-        }).join('');
+      }).join('');
     }
 
     score.addEventListener('click', showScoreModal);
